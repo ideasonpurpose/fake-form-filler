@@ -1,6 +1,9 @@
+// jshint node: true
+
 'use strict';
 
 var path = require('path');
+var http = require('http');
 
 var _ = require('lodash');
 var gulp = require('gulp');
@@ -15,10 +18,13 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
-// var reactify = require('reactify');
+
+var connect = require('connect');
+var serveStatic = require('serve-static');
 
 // var config = require('../config');
-
+var config = {}
+config.local_port = 9044;
 
 var bundlers = {};  // persistent container for watchify instances
 
@@ -69,7 +75,7 @@ var bundle = function(key) {
     .pipe(buffer())
     // .pipe(rename({extname: '.min.js'}))
     // .pipe(sourcemaps.init({loadMaps: true}))
-    // .pipe(uglify())
+    .pipe(uglify())
     // .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('.'));
 };
@@ -113,3 +119,24 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('.'));
     }));
   });
+
+/**
+* gulp webserver - start up a livereload-enabled webserver.
+* The connect-livereload middleware injects the livereload snippet
+* for working on static assets without Vagrant
+*/
+gulp.task('webserver', function() {
+  var reporter = function() {
+    gutil.log(
+      'Local webserver listening on port',
+      chalk.magenta(config.local_port),
+      '(http://localhost:' + config.local_port + ')'
+    );
+  };
+  var app = connect()
+    .use(serveStatic('./'));
+  http.createServer(app).listen(config.local_port, null, null, reporter);
+});
+
+
+gulp.task('watch', ['watchify', 'webserver']);
