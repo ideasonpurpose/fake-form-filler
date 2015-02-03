@@ -1,0 +1,35 @@
+{
+  "name": "qa-form-helper",
+  "version": "0.0.1",
+  "description": "An autofill bookmarklet for quickly populating web forms with fake data for testing",
+  "main": "autofill.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ideasonpurpose/qa-form-helper"
+  },
+  "author": "Joe Maller <joe@ideasonpurpose.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ideasonpurpose/qa-form-helper/issues"
+  },
+  "homepage": "https://github.com/ideasonpurpose/qa-form-helper",
+  "dependencies": {
+    "chance": "^0.7.3",
+    "jquery": "^1.11.2",
+    "lodash": "^3.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.3",
+    "gulp": "^3.8.10",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.3",
+    "pretty-hrtime": "^1.0.0",
+    "through2": "^0.6.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.3.0"
+  }
+}

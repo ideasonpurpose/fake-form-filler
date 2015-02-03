@@ -3,6 +3,6 @@ An autofill bookmarklet for quickly populating web forms with fake data for test
 
 To install, just copy this url into a bookmark:
 
-    javascript:(function(){var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='https://rawgit.com/joemaller/6f1a1814d28d8aebd88a/raw/autofill.js';document.getElementsByTagName('head')[0].appendChild(s);})()
+    javascript:(function(){var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='https://rawgit.com/ideasonpurpose/qa-form-helper/master/autofill.src.js';document.getElementsByTagName('head')[0].appendChild(s);})()
 
 Lightly tested, seems to work most everywhere.

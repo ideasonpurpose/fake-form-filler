@@ -3,7 +3,7 @@
 // This script is meant to be pulled into a bookmarklet. Create a bookmark with the following
 // code snippet as the address.
 //
-// javascript:(function(){var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='https://gist.githubusercontent.com/joemaller/6f1a1814d28d8aebd88a/raw/autofill.js';document.getElementsByTagName('head')[0].appendChild(s);})()
+// javascript:(function(){var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='https://rawgit.com/ideasonpurpose/qa-form-helper/master/autofill.src.js';document.getElementsByTagName('head')[0].appendChild(s);})()
 
 var $ = require('jquery');
 
@@ -17,24 +17,25 @@ var chance = new Chance();
  */
 var fillify = function(input) {
   var $input = $(input);
-  var type = $input.attr('type').toLowerCase();
-  var name = $input.attr('name').toLowerCase();
+  var type = $input.attr('type');
+  var name = $input.attr('name');
+  var id = $input.attr('id');
 
   // email
   var mail_regex = /e[-_.]?mail/i;
-  if (mail_regex.test(type) || mail_regex.test(name)) {
+  if (mail_regex.test(type) || mail_regex.test(name) || mail_regex.test(id)) {
     return $input.val(chance.email());
   }
 
   // urls
   var url_regex = /(url|web\s?(site|page)?)/i;
-  if (type === 'url' || url_regex.test(name)) {
+  if (type === 'url' || url_regex.test(name) || url_regex.test(id)) {
     return $input.val(chance.url());
   }
 
   // phone numbers
   var phone_regex = /((mobile|tele)[- ]?)?phone/i;
-  if (phone_regex.test(name)) {
+  if (phone_regex.test(name) || phone_regex.test(id)) {
     return $input.val(chance.phone());
   }
 
@@ -43,9 +44,14 @@ var fillify = function(input) {
 };
 
 /**
- * Get all inputs that aren't submit buttons
+ * Get all inputs
+ *  - skip submit buttons
+ *  - skip hidden fields
  */
-$('input').not('[type=submit]').each(function(i, e) {
+$('input')
+  .not('[type=submit]')
+  .not('[type=hidden]')
+  .each(function(i, e) {
   fillify(e);
 });
 
