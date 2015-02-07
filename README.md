@@ -1,5 +1,4 @@
-Fake Form Filler
-An autofill bookmarklet for quickly populating web forms with fake data for testing. 
+An autofill bookmarklet for quickly populating web forms with fake data. Useful for testing. 
 
 To install, just copy this url into a bookmark: 
 
