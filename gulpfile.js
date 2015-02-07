@@ -18,18 +18,30 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
+var del = require('del');
 
 var connect = require('connect');
 var serveStatic = require('serve-static');
 
 // var config = require('../config');
-var config = {}
+var config = {};
 config.local_port = 9044;
+config.buildfiles = ['./autofill.js', './build'];
+config.srcdir = './src';
+
+/**
+ * clean - removes all buildfiles
+ */
+gulp.task('clean', function(cb) {
+  del(config.buildfiles, cb);
+});
+
+
 
 var bundlers = {};  // persistent container for watchify instances
 
 gulp.task('watchify', function() {
-  return gulp.src('./src/*.js')
+  return gulp.src(path.join(config.srcdir, '*.js'))
     .pipe(through.obj(function(file, enc, cb) {
       var bundler = watchify(browserify(file.path, watchify.args)) // don't send a stream or the watches will never close
         // .transform(reactify)
@@ -37,7 +49,7 @@ gulp.task('watchify', function() {
           _.forEach(ids, function(id) {
             gutil.log(
               'Watchify:',
-              chalk.magenta(path.relative('source', id)),
+              chalk.magenta(path.relative(config.srcdir, id)),
               'was modified. Rebundling...');
           });
           bundle(file.relative);
@@ -85,7 +97,7 @@ var bundle = function(key) {
  * browserify task for one-off bundling of js assets
  */
 gulp.task('browserify', function() {
-  return gulp.src('./src/*.js')
+  return gulp.src(path.join(config.srcdir, '*.js'))
     .pipe(through.obj(function(file, enc, cb) {
       var startTime = process.hrtime();
       browserify(file.path)
@@ -114,7 +126,7 @@ gulp.task('browserify', function() {
         .pipe(buffer())
         // .pipe(rename({extname: '.min.js'}))
         // .pipe(sourcemaps.init({loadMaps: true}))
-        // .pipe(uglify())
+        .pipe(uglify())
         // .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('.'));
     }));
