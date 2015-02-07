@@ -18,6 +18,26 @@ var confirmables = {
 
 };
 
+
+var fakeCompanyGenerator = function() {
+  var name;
+  var i = 0;
+  do {
+    i++;
+    if (i > 100) {
+      break;
+    }
+    var one = chance.weighted([chance.city(), chance.state({full: true }), ''], [3, 3, 1]);
+    var two = chance.weighted([chance.last(), ''], [3, 1]);
+    var three = chance.weighted([chance.capitalize(chance.word({syllables: 2})), ''], [2, 2]);
+    name = chance.shuffle([one, two, three]).join(' ');
+    console.log(i, name);
+  } while (name.trim() === '');
+
+  var entity = chance.weighted(['Corporation', 'Corp.', 'Inc.', 'Incorporated', 'LLC', 'Ltd.', 'AG', 'GmbH', 'Company', 'Ventures', 'Investments', ''], [7, 7, 6, 6, 6, 4, 3, 3, 4, 3, 2, 4]);
+  name = name + ' ' + entity;
+  return name.replace(/\s+/g, ' ').trim();
+};
 /**
  * All the logic is in here. This attempts
  * to enter proper information for email,
@@ -39,6 +59,7 @@ var fillify = function(input) {
   if (type === 'password') {
     return $input.val(confirmables.password);
   }
+
   // urls
   var url_regex = /(url|web\s?(site|page)?)/i;
   if (type === 'url' || url_regex.test(name) || url_regex.test(id)) {
@@ -48,14 +69,23 @@ var fillify = function(input) {
   // phone numbers
   var phone_regex = /((mobile|tele)[- ]?)?phone/i;
   if (phone_regex.test(name) || phone_regex.test(id)) {
-    return $input.val(chance.phone());
+    var phone = chance.phone();
+    // TODO: phone numbers are failing against Google's libphonenumber (via https://github.com/Propaganistas/laravel-phone)
+    // check them here first?
+    return $input.val(phone);
+  }
+
+  // Company names
+  var co_regex = /(org|organizaton|company|business)(name)?/i;
+  if (co_regex.test(name) || co_regex.test(id)) {
+    return $input.val(fakeCompanyGenerator());
   }
 
   // first names
   var fname_regex = /(first|given)[-_. ]?name/i;
   if (fname_regex.test(name) || fname_regex.test(id)) {
     return $input.val(chance.first());
-  };
+  }
 
   // Last names, sometimes hyphated
   var lastNameRegex = /(last|family|sur)[-_. ]?name/i;
@@ -67,13 +97,20 @@ var fillify = function(input) {
     return $input.val(chance.last() + hyphenated);
   }
 
-  // TODO: Catch company names
+  // full names
+  var name_regex = /(((full)?\s*name)|contact)$/i;
+  if (name_regex.test(name) || name_regex.test(id)) {
+    return $input.val(chance.name({middle: chance.bool()}));
+  }
+
+  // Addresses names
+  var address_regex = /(street|post|postal|mailing)?\s*(address)/i;
+  if (address_regex.test(name) || address_regex.test(id)) {
+    return $input.val(chance.address({short_suffix: chance.bool()}));
+  }
+
   // Throw random strings at whatever's left
-  var one = chance.weighted([chance.city(), chance.state({full: true}), ''], [3, 3, 1]);
-  var two = chance.weighted([chance.last(), ''], [3, 1]);
-  var three = chance.weighted(['Corporation', 'Corp.', 'Inc.', 'Incorporated', 'Ventures', 'Investments', ''], [7,5,6,5,1,1,6]);
-  return $input.val([one, two, three].join(' '));
-  // return $input.val(chance.name({middle: chance.bool()}));
+  return $input.val(chance.word({syllables: 2}));
 };
 
 /**
